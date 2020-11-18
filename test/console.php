@@ -20,4 +20,4 @@ $result    = $docx2txt->setDocx('./Examples.docx');
 $replyText = $docx2txt->extract();
 
 ## 输出结果
-echo $text;
+echo $replyText;
