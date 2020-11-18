@@ -1,14 +1,14 @@
 {
-    "name": "kevinfei520/translate",
+    "name": "kevinfei/docx2text",
     "description": "Make a translate with php language.",
     "type": "library",
     "license": "MIT",
     "keywords": [
-        "translate",
-        "docx2text"
+        "docx2text",
+        "translate"
     ],
     "authors": [{
-        "name": "kevinfei520",
+        "name": "kevinfei",
         "email": "794783766@qq.com"
     }],
     "require": {
@@ -16,7 +16,7 @@
     },
     "autoload": {
         "psr-4": {
-            "kevinfei520\\translate\\": "src/"
+            "kevinfei\\translate\\": "src/"
         }
     }
 }
