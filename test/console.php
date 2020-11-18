@@ -11,7 +11,7 @@
 require "../src/TranslateWord.php";
 
 ## new对象
-$docx2txt  = new Kevin5211314\translate\Docx2text();
+$docx2txt  = new kevinfei\translate\Docx2text();
 
 ## 设置docx文档
 $result    = $docx2txt->setDocx('./Examples.docx');

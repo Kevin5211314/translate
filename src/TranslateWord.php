@@ -5,7 +5,7 @@
  * Class Docx2text
  * @package dingjingfei\Docx2text
  */
-namespace Kevin5211314\translate;
+namespace kevinfei\translate;
 
 class Docx2text
 {
