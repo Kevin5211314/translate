@@ -8,7 +8,7 @@
 
 ##Examples
 
-require "../src/TranslateWord.php";
+require "../src/Docx2text.php";
 
 ## new对象
 $docx2txt  = new kevinfei\translate\Docx2text();
