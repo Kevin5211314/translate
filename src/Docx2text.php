@@ -1,16 +1,19 @@
 <?php
 
 /**
- * 这是一个支持word文档转string
+ *
+ * 支持word文档转string
+ *
  * Class Docx2text
- * @package dingjingfei\Docx2text
+ *
+ * @package Translate\Docx2text
  */
+
 namespace kevinfei\translate;
 
-class Docx2text
-{
-    
- 	const SEPARATOR_TAB = "\t";
+class Docx2text {
+
+    const SEPARATOR_TAB = "\t";
 
     const SEPARATOR_BR = "<br/>";
 
@@ -45,7 +48,6 @@ class Docx2text
      * @access private
      */
     private $_newDocument;
-
 
     /**
      * xml from numbering.xml
@@ -111,7 +113,6 @@ class Docx2text
      */
     private $textOuput;
 
-
     /**
      * 布尔变量知道图表是否将被转换为文本
      *
@@ -173,10 +174,11 @@ class Docx2text
     /**
      * 所有的图片路径信息
      * Enter description here ...
+     *
      * @var unknown_type
      */
     private $allImgPaths;
-    
+
     /**
      * Construct
      *
@@ -184,8 +186,7 @@ class Docx2text
      * @access public
      */
 
-    public function __construct($boolTransforms = array())
-    {
+    public function __construct($boolTransforms = array()) {
         //table,list, paragraph, footnote, endnote, chart, media
         if (isset($boolTransforms['table'])) {
             $this->table2text = $boolTransforms['table'];
@@ -229,114 +230,114 @@ class Docx2text
             $this->chart2text = true;
         }
 
-        $this->textOuput = '';
-        $this->media = '';
-        $this->docx = '';
-        $this->_numbering = '';
+        $this->textOuput     = '';
+        $this->media         = '';
+        $this->docx          = '';
+        $this->_numbering    = '';
         $this->numberingList = array();
-        $this->endnotes = array();
-        $this->footnotes = array();
-        $this->medianotes = array();
-        $this->_media = array();
-        $this->relations = array();
+        $this->endnotes      = array();
+        $this->footnotes     = array();
+        $this->medianotes    = array();
+        $this->_media        = array();
+        $this->relations     = array();
     }
-    
+
     /**
      * 遍历图片节点信息
      * Enter description here ...
+     *
      * @param unknown_type $node
      * @param unknown_type $retArray
      * @param unknown_type $imgWHArray
      */
-    public function vistNodes($node,&$retArray,&$imgWHArray){
-        if($node == null){
+    public function vistNodes($node, &$retArray, &$imgWHArray) {
+        if ($node == null) {
             return;
         }
-        if($node->nodeName=='wp:extent'){
-        	if($node->hasAttributes()){
-        		 $length = $node->attributes->length;
-        		 $width = 0;
-        		 $height = 0;
-        		 for ($i = 0; $i < $length; ++$i){
-        		 	$item = $node->attributes->item($i);
-        		 	if($item->nodeName == "cx"){
-        		 		$width = round($item->nodeValue*100/914400);
-        		 	}else if($item->nodeName == "cy"){
-        		 		$height = round($item->nodeValue*100/914400);
-        		 	}
-        		 }
-        		 $info = array('width'=>$width,'height'=>$height);
-        		 $imgWHArray[] = $info;
-        	}
-        }else if($node->nodeName=='v:shape'){
-        	if($node->hasAttributes()){
-        		$length = $node->attributes->length;
-        		$width = 0;
-        		$height = 0;
-        		for ($i = 0; $i < $length; ++$i){
-        			$item = $node->attributes->item($i);
-        			if($item->nodeName == "style"){
-        				$style = $item->nodeValue;
-        				$data = explode(";",$style);
+        if ($node->nodeName == 'wp:extent') {
+            if ($node->hasAttributes()) {
+                $length = $node->attributes->length;
+                $width  = 0;
+                $height = 0;
+                for ($i = 0; $i < $length; ++$i) {
+                    $item = $node->attributes->item($i);
+                    if ($item->nodeName == "cx") {
+                        $width = round($item->nodeValue * 100 / 914400);
+                    } else if ($item->nodeName == "cy") {
+                        $height = round($item->nodeValue * 100 / 914400);
+                    }
+                }
+                $info         = array('width' => $width, 'height' => $height);
+                $imgWHArray[] = $info;
+            }
+        } else if ($node->nodeName == 'v:shape') {
+            if ($node->hasAttributes()) {
+                $length = $node->attributes->length;
+                $width  = 0;
+                $height = 0;
+                for ($i = 0; $i < $length; ++$i) {
+                    $item = $node->attributes->item($i);
+                    if ($item->nodeName == "style") {
+                        $style = $item->nodeValue;
+                        $data  = explode(";", $style);
                         foreach ($data as $key => $value) {
-                           $data[$key] = explode(":",$value); 
+                            $data[$key] = explode(":", $value);
                         }
                         $infoarray = '';
                         foreach ($data as $key => $value) {
-                            if ( $value[0] === '') {
+                            if ($value[0] === '') {
                                 unset($data[$key]);
-                            }else{
-                                 $infoarray[$key] = [ $value[0] => $value[1] ];
+                            } else {
+                                $infoarray[$key] = [$value[0] => $value[1]];
                             }
                         }
                         $height = '';
                         $width  = '';
                         foreach ($infoarray as $key => $value) {
-                            $keys =  array_keys($value);
+                            $keys = array_keys($value);
                             foreach ($keys as $k => $v) {
                                 if ($v === 'height') {
-                                    if ( strpos($value['height'], 'px')) {
-                                        $height =  strstr($value['height'], 'px', TRUE);
-                                    }else{
-                                        $height =  strstr($value['height'], 'pt', TRUE);
-                                        $height =  $height*4/3;
+                                    if (strpos($value['height'], 'px')) {
+                                        $height = strstr($value['height'], 'px', true);
+                                    } else {
+                                        $height = strstr($value['height'], 'pt', true);
+                                        $height = $height * 4 / 3;
                                     }
-                                }elseif ($v === 'width') {
-                                    if ( strpos($value['width'], 'px')) {
-                                        $width =  strstr($value['width'], 'px', TRUE);
-                                    }else{
-                                        $width =  strstr($value['width'], 'pt', TRUE);
-                                        $width =  $width*4/3;
+                                } elseif ($v === 'width') {
+                                    if (strpos($value['width'], 'px')) {
+                                        $width = strstr($value['width'], 'px', true);
+                                    } else {
+                                        $width = strstr($value['width'], 'pt', true);
+                                        $width = $width * 4 / 3;
                                     }
                                 }
                             }
                         }
-
-        			}
-        		}
-        		$width = $width; //英寸转像素
-        		$height = $height;
-        	}
-        	$info = array('width'=>$width,'height'=>$height);
-        	$imgWHArray[] = $info;
+                    }
+                }
+                $width  = $width; //英寸转像素
+                $height = $height;
+            }
+            $info         = array('width' => $width, 'height' => $height);
+            $imgWHArray[] = $info;
         }
-        if($node->nodeName=='a:blip'  or  $node->nodeName=='v:imagedata' ){
-           if($node->hasAttributes()){
+        if ($node->nodeName == 'a:blip' or $node->nodeName == 'v:imagedata') {
+            if ($node->hasAttributes()) {
                 $length = $node->attributes->length;
                 for ($i = 0; $i < $length; ++$i) {
-                	$item = $node->attributes->item($i);
-                    if($item->nodeName == "r:embed"){
-                		$retArray[] = $item->nodeValue;	
-                	}else if($item->nodeName == "r:id"){
-                		$retArray[] = $item->nodeValue;
-                	}
-                }   
+                    $item = $node->attributes->item($i);
+                    if ($item->nodeName == "r:embed") {
+                        $retArray[] = $item->nodeValue;
+                    } else if ($item->nodeName == "r:id") {
+                        $retArray[] = $item->nodeValue;
+                    }
+                }
                 return $retArray;
             }
         }
-        if($node->childNodes){
-            foreach ($node->childNodes as $child){
-                $this->vistNodes($child,$retArray,$imgWHArray);
+        if ($node->childNodes) {
+            foreach ($node->childNodes as $child) {
+                $this->vistNodes($child, $retArray, $imgWHArray);
             }
         }
     }
@@ -344,12 +345,12 @@ class Docx2text
     /**
      *
      * 提取单词文档的内容，并在给定名称时创建文本文件。
+     *
      * @access public
      * @param string $filename of the word document.
      * @return string
      */
-    public function extract()
-    {   
+    public function extract() {
         if (empty($this->_document)) {
             exit('There is no content');
         }
@@ -372,29 +373,29 @@ class Docx2text
 
     /**
      * 提取w:p标签的内容
+     *
      * @access private
-     * @param  节点对象 object
+     * @param 节点对象 object
      * @return string
      */
-    private function printWP($node)
-    {   
+    private function printWP($node) {
         if ($this->list2text) {//将ooxml中的列表转换为带有制表符和项目符号的格式化列表
             if (empty($this->numberingList)) {//检查是否从zip压缩文件中提取numbering.xml
                 $this->listNumbering();
             }
         }
         $text = '';
-        foreach ($node->childNodes as $child){
-        	if ( $child->tagName != 'w:instrText') {
-        		if ($child->hasChildNodes()) {
-        			foreach ($child->childNodes as $node) {
-        				if ( $node->tagName === 'w:instrText') {
-        					$node->nodeValue = '';
-        				}
-        			}
-        		}
-                $text .= $this->toText($child);  //获取全部的text  
-        	}
+        foreach ($node->childNodes as $child) {
+            if ($child->tagName != 'w:instrText') {
+                if ($child->hasChildNodes()) {
+                    foreach ($child->childNodes as $node) {
+                        if ($node->tagName === 'w:instrText') {
+                            $node->nodeValue = '';
+                        }
+                    }
+                }
+                $text .= $this->toText($child);  //获取全部的text
+            }
         }
         return $text;
     }
@@ -402,71 +403,73 @@ class Docx2text
     /**
      * 处理所有的图片节点，查看用户上传的word中的全部的图片
      * Enter description here ...
+     *
      * @param $id
      */
-    public function getAllImageNodes(){
-    	$imgDocx = new \ZipArchive();
-    	$ret = $imgDocx->open($this->fileName);
-    	if ($ret === true) {
-    		$media = $imgDocx->getFromName('word/_rels/document.xml.rels');
-    		$domDocument = new \DomDocument();
-    		$domDocument->loadXML($media);
-    		$retArray = array();
-    		foreach ($domDocument->childNodes as $child) {
-    			if($child->nodeName  == 'Relationships'){
-    				foreach ($child->childNodes as $node){
-    					if($node->nodeName=='Relationship'){
-    						if($node->hasAttributes()){
-    							$length = $node->attributes->length;
-    							for ($i = 0; $i < $length; ++$i) {
-    								$item = $node->attributes->item($i);
-    								$retArray[] = array($item->nodeName=>$item->nodeValue);
-    							}
-    						}
-    					}
-    				}
-    			}
-    		}
-    		unset($domDocument);
-    		$imgDocx->close();
-    		return $retArray;
-		}else{
-			$imgDocx->close();
-		}
-	}
+    public function getAllImageNodes() {
+        $imgDocx = new \ZipArchive();
+        $ret     = $imgDocx->open($this->fileName);
+        if ($ret === true) {
+            $media       = $imgDocx->getFromName('word/_rels/document.xml.rels');
+            $domDocument = new \DomDocument();
+            $domDocument->loadXML($media);
+            $retArray = array();
+            foreach ($domDocument->childNodes as $child) {
+                if ($child->nodeName == 'Relationships') {
+                    foreach ($child->childNodes as $node) {
+                        if ($node->nodeName == 'Relationship') {
+                            if ($node->hasAttributes()) {
+                                $length = $node->attributes->length;
+                                for ($i = 0; $i < $length; ++$i) {
+                                    $item       = $node->attributes->item($i);
+                                    $retArray[] = array($item->nodeName => $item->nodeValue);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            unset($domDocument);
+            $imgDocx->close();
+            return $retArray;
+        } else {
+            $imgDocx->close();
+        }
+    }
 
-	/**
-	 * 如果题目下有图片，则处理图片
-	 * @param    [int]      $id        [图片的id]
-	 * @param    [string]   $filepath  [文件路径]
-	 * @return   [string]   $path      图片路径
-	 * @Author   Kevin.D
-	 * @DateTime 2017-12-26
-	 */
-	public function ProcessingPictures($id){
-		foreach ($this->allImgPaths as $key => $value) {
-			if ( $value['Id'] == $id ) {
-				return $this->PictureFinal($this->allImgPaths[$key+2]['Target']);
-			}
-		}
-		return null;
-	}
-    
-	/**
-	 * 查找具体的图片  getPictureFinal
+    /**
+     * 如果题目下有图片，则处理图片
      *
-	 * @author   Kevin.D
-	 * @access   public
-	 * @param    $imagename    [图片名称]
-	 */
-	public function getPictureFinal( $imagename ){
-		$medias = $this->docx->getFromName('word/'.$imagename);
-		$base_img = base64_encode($medias);
-		$imagename = substr($imagename,7);
-		$reply['imgname'] = $imagename;
-		$reply['base64'] = $base_img;
-		return $reply;
-	}
+     * @param    [int]      $id        [图片的id]
+     * @param    [string]   $filepath  [文件路径]
+     * @return   [string]   $path      图片路径
+     * @Author   Kevin.D
+     * @DateTime 2017-12-26
+     */
+    public function ProcessingPictures($id) {
+        foreach ($this->allImgPaths as $key => $value) {
+            if ($value['Id'] == $id) {
+                return $this->PictureFinal($this->allImgPaths[$key + 2]['Target']);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 查找具体的图片  getPictureFinal
+     *
+     * @param    $imagename [图片名称]
+     * @author   Kevin.D
+     * @access   public
+     */
+    public function getPictureFinal($imagename) {
+        $medias           = $this->docx->getFromName('word/' . $imagename);
+        $base_img         = base64_encode($medias);
+        $imagename        = substr($imagename, 7);
+        $reply['imgname'] = $imagename;
+        $reply['base64']  = $base_img;
+        return $reply;
+    }
 
     /**
      * Setter
@@ -474,29 +477,28 @@ class Docx2text
      * @access public
      * @param $filename
      */
-    public function setDocx($filename)
-    {   
-    	$this->fileName = $filename;
-        $this->docx = new \ZipArchive();
-        $ret = $this->docx->open($filename);
+    public function setDocx($filename) {
+        $this->fileName = $filename;
+        $this->docx     = new \ZipArchive();
+        $ret            = $this->docx->open($filename);
         if ($ret === true) {
             $this->_document = $this->docx->getFromName('word/document.xml');
             return true;
         } else {
-        	$this->docx->close();
+            $this->docx->close();
             return false;
         }
     }
-    
+
     /**
      * 关闭
      * Enter description here ...
      */
-    public function closeDocx(){
-    	if($this->docx != null){
-    		$this->docx->close();
-    	}
-    	unset($this->domDocument);
+    public function closeDocx() {
+        if ($this->docx != null) {
+            $this->docx->close();
+        }
+        unset($this->domDocument);
     }
 
     /**
@@ -504,8 +506,7 @@ class Docx2text
      *
      * @access private
      */
-    private function loadEndNote()
-    {
+    private function loadEndNote() {
         if (empty($this->endnotes)) {
             if (empty($this->_endnote)) {
                 $this->_endnote = $this->docx->getFromName('word/endnotes.xml');
@@ -515,7 +516,7 @@ class Docx2text
                 $domDocument->loadXML($this->_endnote);
                 $endnotes = $domDocument->getElementsByTagNameNS('http://schemas.openxmlformats.org/wordprocessingml/2006/main', 'endnote');
                 foreach ($endnotes as $endnote) {
-                    $xml = $endnote->ownerDocument->saveXML($endnote);
+                    $xml                                            = $endnote->ownerDocument->saveXML($endnote);
                     $this->endnotes[$endnote->getAttribute('w:id')] = trim(strip_tags($xml));
                 }
                 unset($domDocument);
@@ -528,8 +529,7 @@ class Docx2text
      *
      * @access private
      */
-    private function loadFootNote()
-    {
+    private function loadFootNote() {
         if (empty($this->footnotes)) {
             if (empty($this->_footnote)) {
                 $this->_footnote = $this->docx->getFromName('word/footnotes.xml');
@@ -539,7 +539,7 @@ class Docx2text
                 $domDocument->loadXML($this->_footnote);
                 $footnotes = $domDocument->getElementsByTagNameNS('http://schemas.openxmlformats.org/wordprocessingml/2006/main', 'footnote');
                 foreach ($footnotes as $footnote) {
-                    $xml = $footnote->ownerDocument->saveXML($footnote);
+                    $xml                                              = $footnote->ownerDocument->saveXML($footnote);
                     $this->footnotes[$footnote->getAttribute('w:id')] = trim(strip_tags($xml));
                 }
                 unset($domDocument);
@@ -552,9 +552,8 @@ class Docx2text
      *
      * @access private
      */
-    private function loadMediaNote()
-    {
-        $ids = array();
+    private function loadMediaNote() {
+        $ids  = array();
         $nums = array();
         //从zip归档中获取xml代码
         $this->_numbering = $this->docx->getFromName('word/numbering.xml');
@@ -572,7 +571,7 @@ class Docx2text
                         foreach ($son->childNodes as $daughter) {
                             if ($daughter->tagName == 'w:numFmt' && $flag) {
                                 $nums[$child->getAttribute('w:abstractNumId')] = $daughter->getAttribute('w:val');//设置列表的内部索引的键和值是它的类型的项目符号
-                                $flag = false;
+                                $flag                                          = false;
                             }
                         }
                     } elseif ($child->tagName == 'w:num' && $son->tagName == 'w:abstractNumId') {
@@ -605,9 +604,8 @@ class Docx2text
      *
      * @access private
      */
-    private function listNumbering()
-    {
-        $ids = array();
+    private function listNumbering() {
+        $ids  = array();
         $nums = array();
         //从zip归档中获取xml代码
         $this->_numbering = $this->docx->getFromName('word/numbering.xml');
@@ -625,7 +623,7 @@ class Docx2text
                         foreach ($son->childNodes as $daughter) {
                             if ($daughter->tagName == 'w:numFmt' && $flag) {
                                 $nums[$child->getAttribute('w:abstractNumId')] = $daughter->getAttribute('w:val');//设置列表的内部索引的键和值是它的类型的项目符号
-                                $flag = false;
+                                $flag                                          = false;
                             }
                         }
                     } elseif ($child->tagName == 'w:num' && $son->tagName == 'w:abstractNumId') {
@@ -662,8 +660,7 @@ class Docx2text
      *
      * @return string
      */
-    private function table($node)
-    {
+    private function table($node) {
         $output = '';
         if ($node->hasChildNodes()) {
             foreach ($node->childNodes as $child) {
@@ -689,48 +686,48 @@ class Docx2text
 
     /**
      * 从document.xml中提取节点的内容，并只返回文本内容和。 剥离html标签
+     *
      * @access private
      * @param $node object
      * @return string
      */
-    private function toText($node)
-    {
-        if($node != null ){
-            if($node->childNodes != null){
-                $fonts = "";
-                $lang = "";
+    private function toText($node) {
+        if ($node != null) {
+            if ($node->childNodes != null) {
+                $fonts      = "";
+                $lang       = "";
                 $outputText = "";
-                foreach ($node->childNodes as $child){
-                    if($child->tagName == "w:rPr"){
-                        foreach($child->childNodes as $suChild){
-                            if($suChild->tagName == 'w:rFonts'){
+                foreach ($node->childNodes as $child) {
+                    if ($child->tagName == "w:rPr") {
+                        foreach ($child->childNodes as $suChild) {
+                            if ($suChild->tagName == 'w:rFonts') {
                                 $fonts = $suChild->getAttribute('w:eastAsia');
-                                if($fonts == ""){
+                                if ($fonts == "") {
                                     $fonts = $suChild->getAttribute('w:eastAsiaTheme');
                                 }
-                                if($fonts == ""){
+                                if ($fonts == "") {
                                     $fonts = $suChild->getAttribute('w:ascii');
                                 }
-                            }else if($suChild->tagName == 'w:lang'){
+                            } else if ($suChild->tagName == 'w:lang') {
                                 $lang = $suChild->getAttribute('w:eastAsia');
                             }
                         }
-                    }else{
+                    } else {
                         $outputText .= $child->ownerDocument->saveXML($child);
                     }
                 }
                 $outputText = strip_tags($outputText);
-                if($outputText == false || $outputText === "false" || $outputText == ""){
+                if ($outputText == false || $outputText === "false" || $outputText == "") {
                     return "";
                 }
                 $fonts = '宋体'; // 无论有没有字体样式，全部使用宋体，全部的字体全部使用宋体
-                if($lang != ""){
+                if ($lang != "") {
                     return "<span lang='{$lang}' style='font-family:{$fonts}'>{$outputText}</span>";
-                }else{
+                } else {
                     return "<span style='font-family:{$fonts}'>{$outputText}</span>";
                 }
                 return "<span style='font-family:{$fonts}'>{$outputText}</span>";
-            }else{
+            } else {
                 $xmllist = $node->ownerDocument->saveXML($node);
                 // if($xmllist == false || $xmllist === "false"){
                 //     return "";
@@ -741,22 +738,22 @@ class Docx2text
                 // }
                 return strip_tags($xmllist);
             }
-        }else{
+        } else {
             return "";
         }
     }
 
     /**
      * 删除空格 删除全部的特殊字符
+     *
      * @Author    Kevin.D
      * @DateTime  2017-12-28
      * @return    string       $str
      */
-    public function trimall($str)
-    {
-        $oldchar=array("　","\t","\n","\r");
-        $newchar=array("","","<br>","");
-        return str_replace($oldchar,$newchar,$str);
+    public function trimall($str) {
+        $oldchar = array("　", "\t", "\n", "\r");
+        $newchar = array("", "", "<br>", "");
+        return str_replace($oldchar, $newchar, $str);
     }
-    
+
 }
