@@ -36,6 +36,6 @@ echo $replyText;
 
 ## composer安装
 ```
-composer require kevinfei/docx2text
+composer require kevinfei/translate
 ```
 
