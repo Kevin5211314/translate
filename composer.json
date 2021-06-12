@@ -18,5 +18,10 @@
         "psr-4": {
             "kevinfei\\translate\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "kevinfei\\translate\\Tests\\": "tests/"
+        }
     }
 }
