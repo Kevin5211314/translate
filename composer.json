@@ -14,6 +14,9 @@
     "require": {
         "php": ">5.4.0"
     },
+    "require-dev": {
+        "phpunit/phpunit": "@stable"
+    },
     "autoload": {
         "psr-4": {
             "kevinfei\\translate\\": "src/"
@@ -23,5 +26,6 @@
         "psr-4": {
             "kevinfei\\translate\\Tests\\": "tests/"
         }
-    }
+    },
+    "minimum-stability": "stable"
 }
