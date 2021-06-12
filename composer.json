@@ -1,5 +1,5 @@
 {
-    "name": "kevinfei\translate",
+    "name": "kevinfei/translate",
     "description": "Make a translate with php language.",
     "type": "library",
     "license": "MIT",
