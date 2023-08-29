@@ -3,10 +3,6 @@
     "description": "Make a translate with php language.",
     "type": "library",
     "license": "MIT",
-    "keywords": [
-        "docx2text",
-        "translate"
-    ],
     "authors": [{
         "name": "kevinfei",
         "email": "794783766@qq.com"
